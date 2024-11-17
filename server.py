@@ -25,8 +25,6 @@ class FinancialService(pb2_grpc.FinancialServiceServicer):
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS Utenti (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            nome VARCHAR(100),
-            cognome VARCHAR(100),
             mail VARCHAR(100) UNIQUE,
             ticker VARCHAR(10)
         )
@@ -34,10 +32,10 @@ class FinancialService(pb2_grpc.FinancialServiceServicer):
         self.cur.execute("""
         CREATE TABLE IF NOT EXISTS Operazioni (
             id INT AUTO_INCREMENT PRIMARY KEY,
-            mail_utente VARCHAR(100),
+            id_utente INT,
             valore FLOAT,
             timestamp DATETIME,
-            FOREIGN KEY (mail_utente) REFERENCES Utenti(mail) ON DELETE CASCADE
+            FOREIGN KEY (id_utente) REFERENCES Utenti(id) ON DELETE CASCADE
         )
         """)
         self.conn.commit()
@@ -45,8 +43,8 @@ class FinancialService(pb2_grpc.FinancialServiceServicer):
     def RegisterUser(self, request, context):
         try:
             self.cur.execute(
-                "INSERT INTO Utenti (nome, cognome, mail, ticker) VALUES (%s, %s, %s, %s)",
-                (request.nome, request.cognome, request.email, request.ticker)
+                "INSERT INTO Utenti (mail, ticker) VALUES (%s, %s)",
+                (request.email, request.ticker)
             )
             self.conn.commit()
             return pb2.UserResponse(success=True, message="User registered successfully")

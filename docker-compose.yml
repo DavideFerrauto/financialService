@@ -19,5 +19,10 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
+  datacollector:
+    build: ./datacollector
+    depends_on:
+      - db
+
 volumes:
   db_data:
